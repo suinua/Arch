@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89f7349d711372fee4084f1801506edb",
+    "content-hash": "de14fa3f75219256a16c7778771d019b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -67,7 +67,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cafett/game_chef",
-                "reference": "6d715ea539baf7ae3902683307c1204f1c9022d6"
+                "reference": "d4d5ca903b19247ff4016fd2fb05a1507d865b1e"
             },
             "require": {
                 "ext-json": "*",
@@ -91,7 +91,7 @@
                     "name": "suinua"
                 }
             ],
-            "time": "2021-04-21T13:42:23+00:00"
+            "time": "2021-04-27T12:52:20+00:00"
         },
         {
             "name": "mine_deep_rock/form_builder",
@@ -424,16 +424,16 @@
         },
         {
             "name": "pocketmine/pocketmine-mp",
-            "version": "3.19.0",
+            "version": "3.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/PocketMine-MP.git",
-                "reference": "b307cd0aa15b76cfe41d2a649d14b3aa6fb78f64"
+                "reference": "a7cd0810020af15fb3d79127c77cf576085cd4cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-MP/zipball/b307cd0aa15b76cfe41d2a649d14b3aa6fb78f64",
-                "reference": "b307cd0aa15b76cfe41d2a649d14b3aa6fb78f64",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-MP/zipball/a7cd0810020af15fb3d79127c77cf576085cd4cc",
+                "reference": "a7cd0810020af15fb3d79127c77cf576085cd4cc",
                 "shasum": ""
             },
             "require": {
@@ -470,7 +470,7 @@
                 "pocketmine/spl": "^0.4.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.83",
+                "phpstan/phpstan": "0.12.84",
                 "phpstan/phpstan-phpunit": "^0.12.6",
                 "phpstan/phpstan-strict-rules": "^0.12.2",
                 "phpunit/phpunit": "^9.2"
@@ -496,7 +496,7 @@
             "homepage": "https://pmmp.io",
             "support": {
                 "issues": "https://github.com/pmmp/PocketMine-MP/issues",
-                "source": "https://github.com/pmmp/PocketMine-MP/tree/3.19.0"
+                "source": "https://github.com/pmmp/PocketMine-MP/tree/3.19.1"
             },
             "funding": [
                 {
@@ -508,7 +508,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2021-04-07T18:03:36+00:00"
+            "time": "2021-04-25T19:34:13+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -644,7 +644,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-zlib": "*",
+        "ext-gd": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"

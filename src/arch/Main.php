@@ -6,14 +6,15 @@ namespace arch;
 
 use arch\pmmp\entities\ArrowProjectile;
 use arch\pmmp\items\Bow;
+use arch\pmmp\items\Smoke;
 use arch\pmmp\scoreboards\ArchGameScoreboard;
 use game_chef\api\GameChef;
 use game_chef\models\GameStatus;
 use game_chef\models\Score;
 use game_chef\pmmp\bossbar\Bossbar;
-use game_chef\pmmp\events\AddedScoreEvent;
+use game_chef\pmmp\events\AddScoreEvent;
 use game_chef\pmmp\events\FinishedGameEvent;
-use game_chef\pmmp\events\PlayerJoinedGameEvent;
+use game_chef\pmmp\events\PlayerJoinGameEvent;
 use game_chef\pmmp\events\PlayerKilledPlayerEvent;
 use game_chef\pmmp\events\PlayerQuitGameEvent;
 use game_chef\pmmp\events\StartedGameEvent;
@@ -38,9 +39,10 @@ class Main extends PluginBase implements Listener
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         Entity::registerEntity(ArrowProjectile::class, true, ["Arrow", EntityIds::ARROW]);
         ItemFactory::registerItem(new Bow(), true);
+        ItemFactory::registerItem(new Smoke(), true);
     }
 
-    public function onJoinGame(PlayerJoinedGameEvent $event) {
+    public function onJoinGame(PlayerJoinGameEvent $event) {
         $player = $event->getPlayer();
         $gameId = $event->getGameId();
         $gameType = $event->getGameType();
@@ -112,7 +114,7 @@ class Main extends PluginBase implements Listener
         }
     }
 
-    public function onAddedScore(AddedScoreEvent $event) {
+    public function onAddedScore(AddScoreEvent $event) {
         $gameId = $event->getGameId();
         $gameType = $event->getGameType();
         if (!$gameType->equals(Arch::getGameType())) return;
