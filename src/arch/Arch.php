@@ -4,24 +4,34 @@
 namespace arch;
 
 
+use arch\pmmp\entities\SmokeEntity;
 use arch\pmmp\items\Bow;
+use arch\pmmp\items\Smoke;
 use arch\pmmp\scoreboards\ArchGameScoreboard;
 use game_chef\api\FFAGameBuilder;
 use game_chef\api\GameChef;
 use game_chef\models\FFAGame;
 use game_chef\models\GameType;
+use game_chef\models\Map;
 use game_chef\models\Score;
 use game_chef\pmmp\bossbar\Bossbar;
 use game_chef\pmmp\bossbar\BossbarType;
 use pocketmine\entity\Attribute;
+use pocketmine\entity\Entity;
 use pocketmine\item\Arrow;
 use pocketmine\level\Position;
 use pocketmine\Player;
+use pocketmine\scheduler\TaskHandler;
 use pocketmine\Server;
 
 class Arch
 {
     const MAPS = [];
+    /**
+     * @var TaskHandler[]
+     * gameId => handler
+     */
+    static array $handlers = [];
 
     static function getGameType(): GameType {
         return new GameType("Arch");
@@ -96,5 +106,27 @@ class Arch
         if (!$result) {
             $player->sendMessage("試合に参加できませんでした");
         }
+    }
+
+    static function spawnMapItem(Map $map) {
+        $items = [
+            new Smoke()
+        ];
+
+        $vectors = $map->getCustomArrayVectorData("map_items");
+        $level = Server::getInstance()->getLevel($map->getLevelName());
+        foreach ($vectors as $vector) {
+            $index = array_rand($items, 1);
+            $level->dropItem($vector, $items[$index]);
+        }
+    }
+
+    static function spawnSmokeEntity(Player $player) {
+        $vector = $player->asVector3();
+        $nbt = Entity::createBaseNBT($vector, $player->getDirectionVector());
+
+        $smokeEntity = new SmokeEntity($player->getLevel(), $nbt);
+        $smokeEntity->setMotion($smokeEntity->getMotion()->multiply(1.5));
+        $smokeEntity->spawnToAll();
     }
 }

@@ -5,6 +5,7 @@ namespace arch;
 
 
 use arch\pmmp\entities\ArrowProjectile;
+use arch\pmmp\entities\SmokeEntity;
 use arch\pmmp\items\Bow;
 use arch\pmmp\items\Smoke;
 use arch\pmmp\scoreboards\ArchGameScoreboard;
@@ -23,8 +24,12 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
+use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\plugin\PluginBase;
+use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
 
 class Main extends PluginBase implements Listener
@@ -81,12 +86,20 @@ class Main extends PluginBase implements Listener
             $player = Server::getInstance()->getPlayer($playerData->getName());
             Arch::sendToArchGame($player, $game);
         }
+
+        $map = $game->getMap();
+        $handler = $this->getScheduler()->scheduleRepeatingTask(new ClosureTask(function (int $tick) use ($map): void {
+            Arch::spawnMapItem($map);
+        }), 20 * 5);
+        Arch::$handlers[strval($gameId)] = $handler;
     }
 
     public function onFinishedGame(FinishedGameEvent $event) {
         $gameId = $event->getGameId();
         $gameType = $event->getGameType();
         if (!$gameType->equals(Arch::getGameType())) return;
+        Arch::$handlers[strval($gameId)]->cancel();
+        unset(Arch::$handlers[strval($gameId)]);
 
         foreach (GameChef::getPlayerDataList($gameId) as $playerData) {
             $player = Server::getInstance()->getPlayer($playerData->getName());
@@ -150,5 +163,26 @@ class Main extends PluginBase implements Listener
 
         //スコアの追加
         GameChef::addFFAGameScore($gameId, $attacker->getName(), new Score(1));
+    }
+
+    public function onTapBlock(PlayerInteractEvent $event) {
+        $player = $event->getPlayer();
+        $item = $player->getInventory()->getItemInHand();
+        if ($item->getId() === Smoke::ITEM_ID) {
+            Arch::spawnSmokeEntity($player);
+        }
+    }
+
+    public function onTapAir(DataPacketReceiveEvent $event) {
+        $packet = $event->getPacket();
+        if ($packet instanceof LevelSoundEventPacket) {
+            if ($packet->sound === LevelSoundEventPacket::SOUND_ATTACK_NODAMAGE) {
+                $player = $event->getPlayer();
+                $item = $event->getPlayer()->getInventory()->getItemInHand();
+                if ($item->getId() === Smoke::ITEM_ID) {
+                    Arch::spawnSmokeEntity($player);
+                }
+            }
+        }
     }
 }
