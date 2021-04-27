@@ -12,7 +12,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 
-class NPCBase extends Human
+class EntityBase extends Human
 {
     protected const NAME = "";
 

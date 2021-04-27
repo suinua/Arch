@@ -7,9 +7,9 @@ namespace arch\pmmp\entities;
 use arch\Arch;
 use pocketmine\Player;
 
-class ArchNPC extends NPCBase
+class GameDealer extends EntityBase
 {
-    const NAME = "ArchNPC";
+    const NAME = "GameDealer";
 
     public string $skinName = self::NAME;
     public string $geometryId = "geometry." . self::NAME;
