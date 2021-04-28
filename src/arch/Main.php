@@ -32,8 +32,10 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
@@ -55,6 +57,12 @@ class Main extends PluginBase implements Listener
         ItemFactory::registerItem(new Bow(), true);
         ItemFactory::registerItem(new Smoke(), true);
         ArchGameScoreboard::init();
+    }
+
+    public function onJoin(PlayerJoinEvent $event) {
+        $pk = new GameRulesChangedPacket();
+        $pk->gameRules["doImmediateRespawn"] = [1, true];
+        $event->getPlayer()->sendDataPacket($pk);
     }
 
     public function onJoinGame(PlayerJoinGameEvent $event) {
@@ -100,7 +108,7 @@ class Main extends PluginBase implements Listener
         $map = $game->getMap();
         $handler = $this->getScheduler()->scheduleRepeatingTask(new ClosureTask(function (int $tick) use ($map): void {
             Arch::spawnMapItem($map);
-        }), 20 * 5);
+        }), 20 * 15);
         Arch::$handlers[strval($gameId)] = $handler;
     }
 
@@ -155,6 +163,9 @@ class Main extends PluginBase implements Listener
 
         //スポーン地点を再設定
         GameChef::setFFAPlayerSpawnPoint($event->getPlayer());
+
+        $event->setDrops([]);
+        $event->setXpDropAmount(0);
     }
 
     public function onPlayerKilledPlayer(PlayerKilledPlayerEvent $event) {

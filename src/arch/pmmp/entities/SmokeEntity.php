@@ -27,14 +27,14 @@ class SmokeEntity extends EntityBase
 
         TaskSchedulerStorage::get()->scheduleDelayedTask(new ClosureTask(function (int $tick): void {
             if ($this->isAlive()) $this->kill();
-        }), 20 * 5);
+        }), 20 * 10);
 
-        $this->handler = TaskSchedulerStorage::get()->scheduleRepeatingTask(new ClosureTask(function (int $tick): void {
+        $this->handler = TaskSchedulerStorage::get()->scheduleDelayedRepeatingTask(new ClosureTask(function (int $tick): void {
             for ($i = 0; $i < 15; ++$i) {
                 $vector = $this->asVector3()->add(rand(-1, 1), 0, rand(-1, 1));
                 $this->getLevel()->addParticle(new MobSpawnParticle($vector, 4, 3));
             }
-        }), 20 * 5);
+        }), 20 * 1, 20 * 0.5);
     }
 
     protected function onDeath(): void {

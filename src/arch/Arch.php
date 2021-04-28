@@ -123,8 +123,11 @@ class Arch
         $vectors = $map->getCustomArrayVectorData("map_items");
         $level = Server::getInstance()->getLevelByName($map->getLevelName());
         foreach ($vectors as $vector) {
-            $index = array_rand($items, 1);
-            $level->dropItem($vector, $items[$index]);
+            //1/2でスポーン
+            if (rand(0, 1) === 0) {
+                $index = array_rand($items, 1);
+                $level->dropItem($vector->add(0, 1), $items[$index]);
+            }
         }
     }
 
