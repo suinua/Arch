@@ -15,7 +15,7 @@ class GameDealer extends EntityBase
     public string $geometryId = "geometry." . self::NAME;
     public string $geometryName = self::NAME . ".geo.json";
 
-    public function onAttackedByPlayer(Player $player): void {
+    public function onTap(Player $player): void {
         Arch::randomJoin($player);
     }
 }

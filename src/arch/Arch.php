@@ -26,7 +26,7 @@ use pocketmine\Server;
 
 class Arch
 {
-    const MAPS = [];
+    const MAPS = ["test"];
     /**
      * @var TaskHandler[]
      * gameId => handler
@@ -48,6 +48,7 @@ class Arch
     static function buildGame(string $mapName): void {
         $ffaGameBuilder = new FFAGameBuilder();
         $ffaGameBuilder->setGameType(self::getGameType());
+        $ffaGameBuilder->setMaxPlayers(null);
         $ffaGameBuilder->setTimeLimit(600);
         $ffaGameBuilder->setVictoryScore(new Score(15));
         $ffaGameBuilder->setCanJumpIn(true);
@@ -93,16 +94,17 @@ class Arch
     static function randomJoin(Player $player): void {
         $games = GameChef::getGamesByType(self::getGameType());
         if (count($games) === 0) {
-            $mapName = self::MAPS[random_int(0, count(self::MAPS) - 1)];
             try {
+                $mapName = self::MAPS[random_int(0, count(self::MAPS) - 1)];
                 self::buildGame($mapName);
             } catch (\Exception $e) {
                 var_dump($e->getMessage());
+                return;
             }
         }
 
-        $game = $games[0];
-        $result = GameChef::joinFFAGame($player, $game->getId());
+        $games = GameChef::getGamesByType(self::getGameType());
+        $result = GameChef::joinFFAGame($player, $games[0]->getId());
         if (!$result) {
             $player->sendMessage("試合に参加できませんでした");
         }

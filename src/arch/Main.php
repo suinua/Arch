@@ -5,7 +5,10 @@ namespace arch;
 
 
 use arch\pmmp\entities\ArrowProjectile;
+use arch\pmmp\entities\EntityBase;
+use arch\pmmp\entities\GameDealer;
 use arch\pmmp\entities\SmokeEntity;
+use arch\pmmp\hotbarmenu\NPCHotbarMenu;
 use arch\pmmp\items\Bow;
 use arch\pmmp\items\Smoke;
 use arch\pmmp\scoreboards\ArchGameScoreboard;
@@ -20,14 +23,19 @@ use game_chef\pmmp\events\PlayerKilledPlayerEvent;
 use game_chef\pmmp\events\PlayerQuitGameEvent;
 use game_chef\pmmp\events\StartedGameEvent;
 use game_chef\pmmp\events\UpdatedGameTimerEvent;
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
@@ -43,6 +51,7 @@ class Main extends PluginBase implements Listener
 
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         Entity::registerEntity(ArrowProjectile::class, true, ["Arrow", EntityIds::ARROW]);
+        Entity::registerEntity(GameDealer::class, true, [GameDealer::NAME]);
         ItemFactory::registerItem(new Bow(), true);
         ItemFactory::registerItem(new Smoke(), true);
     }
@@ -183,6 +192,39 @@ class Main extends PluginBase implements Listener
                     Arch::spawnSmokeEntity($player);
                 }
             }
+        }
+    }
+
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool {
+        if (!($sender instanceof Player)) return false;
+        if ($label === "npc") {
+            $menu = new NPCHotbarMenu($sender);
+            $menu->send();
+            return true;
+        }
+        return false;
+    }
+
+    public function onDamagedEntity(EntityDamageEvent $event) {
+        $entity = $event->getEntity();
+        if (!($entity instanceof EntityBase)) return;
+
+        if ($entity instanceof GameDealer) {
+            $event->setCancelled();
+
+            if ($event instanceof EntityDamageByEntityEvent) {
+                $attacker = $event->getDamager();
+                if (!($attacker instanceof Player)) return;
+
+                $entity->onTap($attacker);
+                return;
+            }
+            return;
+        }
+
+        if ($entity instanceof SmokeEntity) {
+            $event->setCancelled();
+            return;
         }
     }
 }

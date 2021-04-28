@@ -16,6 +16,10 @@ use pocketmine\utils\TextFormat;
 class ArchGameScoreboard extends Scoreboard
 {
     private static function create(Player $player, FFAGame $game): Scoreboard {
+        if (self::$slot === null) {
+            self::init(ScoreboardSlot::sideBar());
+        }
+
         $scores = [];
 
         $isRankedInTop5 = false;
@@ -36,8 +40,7 @@ class ArchGameScoreboard extends Scoreboard
             $scores[] = new Score($player->getName() . "");
         }
 
-        $slot = ScoreboardSlot::sideBar();
-        return parent::__create($slot, $game->getMap()->getName(), $scores, ScoreSortType::smallToLarge());
+        return parent::__create($game->getMap()->getName(), $scores, ScoreSortType::smallToLarge());
     }
 
     static function send(Player $player, FFAGame $game) {

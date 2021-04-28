@@ -14,6 +14,11 @@ use pocketmine\scheduler\TaskHandler;
 
 class SmokeEntity extends EntityBase
 {
+    const NAME = "Smoke";
+
+    public string $skinName = self::NAME;
+    public string $geometryId = "geometry." . self::NAME;
+    public string $geometryName = self::NAME . ".geo.json";
 
     private TaskHandler $handler;
 
