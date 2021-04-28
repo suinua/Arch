@@ -15,25 +15,24 @@ use pocketmine\utils\TextFormat;
 
 class ArchGameScoreboard extends Scoreboard
 {
-    private static function create(Player $player, FFAGame $game): Scoreboard {
-        if (self::$slot === null) {
-            self::init(ScoreboardSlot::sideBar());
-        }
+    static function init(): void {
+        self::__setup(ScoreboardSlot::sideBar());
+    }
 
+    private static function create(Player $player, FFAGame $game): Scoreboard {
         $scores = [];
 
         $isRankedInTop5 = false;
         foreach (GameChef::sortFFATeamsByScore($game->getTeams()) as $index => $team) {
-            $scores[] = new Score($team->getName() . ":" . strval($team->getScore()));
             if ($team->getName() === $player->getName()) {
                 $isRankedInTop5 = true;
                 $scores[] = new Score(TextFormat::RED . $team->getName() . TextFormat::RESET . ":" . strval($team->getScore()));
             } else {
                 $scores[] = new Score($team->getName() . ":" . strval($team->getScore()));
             }
+
             if ($index >= 5) break;
         }
-
 
         if (!$isRankedInTop5) {
             $scores[] = new Score("----------");

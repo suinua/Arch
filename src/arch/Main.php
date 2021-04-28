@@ -54,6 +54,7 @@ class Main extends PluginBase implements Listener
         Entity::registerEntity(GameDealer::class, true, [GameDealer::NAME]);
         ItemFactory::registerItem(new Bow(), true);
         ItemFactory::registerItem(new Smoke(), true);
+        ArchGameScoreboard::init();
     }
 
     public function onJoinGame(PlayerJoinGameEvent $event) {
@@ -89,7 +90,7 @@ class Main extends PluginBase implements Listener
         if (!$gameType->equals(Arch::getGameType())) return;
 
         $game = GameChef::findFFAGameById($gameId);
-        GameChef::setTeamGamePlayersSpawnPoint($gameId);
+        GameChef::setFFAPlayersSpawnPoint($gameId);
 
         foreach (GameChef::getPlayerDataList($gameId) as $playerData) {
             $player = Server::getInstance()->getPlayer($playerData->getName());

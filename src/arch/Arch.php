@@ -104,9 +104,14 @@ class Arch
         }
 
         $games = GameChef::getGamesByType(self::getGameType());
-        $result = GameChef::joinFFAGame($player, $games[0]->getId());
+        $game = $games[0];
+        $result = GameChef::joinFFAGame($player, $game->getId());
         if (!$result) {
             $player->sendMessage("試合に参加できませんでした");
+        }
+
+        if (count(GameChef::getPlayerDataList($game->getId())) >= 2) {
+            GameChef::startGame($game->getId());
         }
     }
 
@@ -116,7 +121,7 @@ class Arch
         ];
 
         $vectors = $map->getCustomArrayVectorData("map_items");
-        $level = Server::getInstance()->getLevel($map->getLevelName());
+        $level = Server::getInstance()->getLevelByName($map->getLevelName());
         foreach ($vectors as $vector) {
             $index = array_rand($items, 1);
             $level->dropItem($vector, $items[$index]);
