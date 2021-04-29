@@ -17,6 +17,8 @@ use game_chef\models\Score;
 use game_chef\pmmp\bossbar\Bossbar;
 use game_chef\pmmp\bossbar\BossbarType;
 use pocketmine\entity\Attribute;
+use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\item\Arrow;
 use pocketmine\level\Position;
@@ -26,8 +28,7 @@ use pocketmine\Server;
 
 class Arch
 {
-    const MAPS = ["test"];
-    /**
+    /**Arch
      * @var TaskHandler[]
      * gameId => handler
      */
@@ -65,6 +66,7 @@ class Arch
         $player->teleport($level->getSpawnLocation());
         $player->teleport(Position::fromObject($player->getSpawn(), $level));
         $player->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->setValue(0.25);
+        $player->addEffect(new EffectInstance(Effect::getEffect(Effect::JUMP_BOOST), 600, 4));
 
         //ボスバー
         $bossbar = new Bossbar($player, self::getBossBarType(), "", 1.0);
@@ -81,6 +83,8 @@ class Arch
         $level = Server::getInstance()->getLevelByName("lobby");
         $player->teleport($level->getSpawnLocation());
         $player->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->setValue(0.1);
+        $player->removeAllEffects();
+
         $player->getInventory()->setContents([
             //todo:インベントリセット
         ]);
@@ -95,7 +99,11 @@ class Arch
         $games = GameChef::getGamesByType(self::getGameType());
         if (count($games) === 0) {
             try {
-                $mapName = self::MAPS[random_int(0, count(self::MAPS) - 1)];
+                $mapNames = GameChef::getAvailableFFAGameMapNames(self::getGameType());
+                if (count($mapNames) === 0) {
+                    throw new \LogicException(self::getGameType() . "に対応したマップを作成してください");
+                }
+                $mapName = $mapNames[rand(0, count($mapNames) - 1)];
                 self::buildGame($mapName);
             } catch (\Exception $e) {
                 var_dump($e->getMessage());
